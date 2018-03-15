@@ -16,6 +16,9 @@
     <!-- Android Only -->
     <preference name="android-minSdkVersion" value="14" />
     <!-- End of Android Only -->
+    <!--DEFAULT ICON-->
+    <icon src="www/res/icon/android/drawable-xxxhdpi-icon.png" />
+    <gap:splash src="www/res/screen/android/drawable-port-xxxhdpi-screen.png" />
     <!-- iOS Only -->
     <!-- End of iOS Only -->
     <plugin name="cordova-plugin-battery-status" source="npm" spec="~1.1.1" />
