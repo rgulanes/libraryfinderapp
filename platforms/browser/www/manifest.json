@@ -1,0 +1,13 @@
+{
+  "background_color": "#FFF",
+  "display": "standalone",
+  "name": "Library Finder App",
+  "short_name": "Library Finder App",
+  "version": "com.brokenshirecollege.libraryfinderapp",
+  "description": "Hello World sample application that responds to the deviceready event.",
+  "author": "PhoneGap Team",
+  "icons": [],
+  "orientation": "portrait",
+  "start_url": "index.html",
+  "theme_color": "#999999"
+}

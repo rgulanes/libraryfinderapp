@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2016 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="theme-color" content="#999999" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+    <!-- Good default declaration:
+    * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+    * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+    * Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+        * Enable inline JS: add 'unsafe-inline' to default-src
+        * Enable eval(): add 'unsafe-eval' to default-src
+    * Create your own at http://cspisawesome.com
+    -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
+    <title>Library Book-Finder App</title>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/sweetalert2.min.css" />
+    <link rel="stylesheet" href="css/jquery.mobile.structure-1.4.5.min.css" />
+    <link rel="stylesheet" href="css/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" href="css/libraryfinderapp.css" />
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="js/sweetalert2.min.js"></script>
+    <script type="text/javascript" src="js/moment.min.js"></script>
+    <script src="js/libraryfinderapp-globals.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/jqm.page.params.js"></script>
+    <script src="js/libraryfinderapp-triggers.js?v=01182018"></script>
+</head>
+<body>
+    <!-- Page Loader -->
+    <div data-role="page" data-theme="b" id="splash" style="background-color: #fff; overflow: auto;">
+        <div class="splash-screen-title">
+          <center>
+            <img src="img/brokenshirecollege.png" alt="logo" class="application-logo-bsc">
+          </center>
+          <h2 class="text text-center">Library Book Finder Application</h2>
+          <h4 class="text text-center">Brokenshire College of Davao</h4>
+        </div>
+    </div>
+    <!-- Login Page -->
+    <div id="login" data-role="page" style="overflow: auto;" data-theme="d" data-title="Login">
+      <div data-role="content" data-theme="a">
+        <div data-dismissable="false" data-role="popup" class="ui-content" data-position-to="window" data-transition="turn" id="message-box">
+          <p id="message-content"></p>
+        </div>
+        <form id="login-form" class="form-signin center-contents">
+          <center>
+            <img src="img/brokenshirecollege.png" alt="logo" class="application-logo-bsc">
+          </center>
+          <h3 class="form-signin-heading text-center">Sign in to<br/>Library Book-Finder Application</h3>
+          <input type="text" name="id_number" class="input-block-level" placeholder="ID Number">
+          <small class="text-left error form-validation id_number"></small>
+          <input type="password" name="password" class="input-block-level" placeholder="Password">
+          <small class="text-left error form-validation password"></small>
+        </form>
+        <div class="ui-body">
+          <fieldset class="ui-grid-a">
+            <button data-theme="d" type="button" id="sign-in-button">Sign in</button>
+            <button data-theme="a" data-icon="grid" type="button" id="search-materials-button">Access Available Materials</button>
+            <small>
+              <p class="text-center">Don't have an account yet?<br>Please Contact Application Admin</p>
+            </small>
+            <!-- <button data-theme="a" type="button" id="sign-up-button">Sign Up</button> -->
+          </fieldset>
+        </div>
+      </div>
+      <div data-role="footer" data-theme="d" data-position="fixed"></div> 
+    </div>
+    <!-- Sign Up Page -->
+    <div id="signup" data-role="page" style="overflow: auto;" data-theme="d" data-title="Sign Up">
+      <div data-role="content" data-theme="a">
+        <form id="signup-form" class="form-signin center-contents">
+          <h2 class="form-signin-heading">Sign Up to<br/>Library Book-Finder Application</h2>
+          <input type="text" name="name" class="input-block-level" placeholder="Full Name">
+          <small class="text-left error form-validation name"></small>
+          <input type="text" name="course" class="input-block-level" placeholder="Course">
+          <small class="text-left error form-validation course"></small>
+          <input type="email" name="email" class="input-block-level" placeholder="Email address">
+          <small class="text-left error form-validation email"></small>
+          <input type="password" name="password" class="input-block-level" placeholder="Password">
+          <small class="text-left error form-validation password"></small>
+        </form>
+        <div class="ui-body">
+          <fieldset class="ui-grid-a">
+            <button data-theme="d" type="button" id="save-btn">Sign Up</button>
+            <a data-rel="back" class=" ui-btn ui-btn-a ui-shadow ui-corner-all">Cancel</a>
+          </fieldset>
+        </div>
+      </div>
+      <div data-role="footer" data-theme="d" data-position="fixed"></div> 
+    </div>
+    <!-- Home Page -->
+    <div id="home" data-role="page" style="overflow: auto;" data-theme="d" data-title="Home">
+      <div data-role="header" data-position="inline">
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#home" data-icon="home" class="ui-btn-active ui-state-persist" data-transition="none">Home</a></li>
+            <li><a href="#search" data-icon="search" data-transition="none">Search</a></li>
+            <li><a href="#reservation-list" data-icon="check" data-transition="none">Reservations</a></li>
+            <li><a href="#about" data-icon="info" data-transition="none">About</a></li>
+            <li><a href="#splash" data-icon="power" data-transition="fade">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+      <div data-role="content" data-theme="a">
+        <h2>Overview</h2>
+        <p>
+          Brokenshire College Library Book Finder Application
+        </p>
+        <div data-role="content" data-theme="a">
+          <h3>Books Classified by Call Number</h3>
+          <ul id="genre-list" data-role="listview" data-inset="true" data-filter="true" data-divider-theme="d">
+          </ul>
+        </div>
+      </div>
+      <div data-role="footer" data-theme="d" data-position="fixed"></div> 
+    </div>
+    <!-- Search Page -->
+    <div id="search" data-role="page" style="overflow: auto;" data-theme="d" data-title="Search">
+      <div data-role="header" data-position="inline">
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#home" data-icon="home" data-transition="none">Home</a></li>
+            <li><a id="search-page" href="#search" data-icon="search" class="ui-btn-active ui-state-persist" data-transition="none">Search</a></li>
+            <li><a href="#reservation-list" data-icon="check" data-transition="none">Reservations</a></li>
+            <li><a href="#about" data-icon="info" data-transition="none">About</a></li>
+            <li><a href="#splash" data-icon="power" data-transition="fade">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+      <div data-role="content" data-theme="a">
+        <div data-role="content" data-theme="a">
+          <label for="search">Search Input:</label>
+          <ul data-role="listview" data-inset="true" data-filter="true" id="available-books"></ul>
+        </div>
+      </div>
+      <div data-role="footer" data-theme="d" data-position="fixed"></div> 
+    </div>
+    <!-- Reservation Form Page -->
+    <div id="reservation-frm" data-role="page" style="overflow: auto;" data-theme="d" data-title="Reservation Form">
+      <div data-role="header" data-position="inline">
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#home" data-icon="home" data-transition="none">Home</a></li>
+            <li><a href="#search" data-icon="search" class="ui-btn-active ui-state-persist" data-transition="none">Search</a></li>
+            <li><a id="reservation-page" href="#reservation-list" data-icon="check" data-transition="none">Reservations</a></li>
+            <li><a href="#about" data-icon="info" data-transition="none">About</a></li>
+            <li><a href="#splash" data-icon="power" data-transition="fade">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+      <div data-role="content" data-theme="a">
+        <form id="reservation-form" action="#" method="post">
+          <div data-role="fieldcontain">
+            <label for="name">Full Name: </label>
+            <input type="text" name="name" value=""  />
+            <input type="hidden" name="user_id" value=""  />
+            <small class="text-left error form-validation name"></small>
+          </div>
+          <div data-role="fieldcontain">
+            <label for="course">Course: </label>
+            <textarea cols="40" rows="8" name="course"></textarea>
+            <small class="text-left error form-validation course"></small>
+          </div>
+          <div data-role="fieldcontain">
+            <label for="search">Book: </label>
+            <input type="search" name="book" id="search" value=""  />
+            <input type="hidden" name="book_id" value=""/>
+            <small class="text-left error form-validation book_id"></small>
+            <input name="method" type="hidden" value="5days"/>
+          </div>
+          <div data-role="fieldcontain" id="rsv-material-info"></div>
+        </form>
+        <div class="ui-body">
+          <fieldset class="ui-grid-a">
+            <div class="ui-block-a"><a data-rel="back" id="cancel-btn" class=" ui-btn ui-btn-d ui-shadow ui-corner-all">Cancel</a></div>
+            <div class="ui-block-b"><button type="button" id="save-btn" data-theme="a">Submit</button></div>
+          </fieldset>
+        </div>
+        <div data-dismissable="false" data-role="popup" class="ui-content" data-position-to="window" data-transition="turn" id="msg-box">
+          <p id="msg-content"></p>
+        </div>
+      </div>
+      <div data-role="footer" data-theme="d" data-position="fixed"></div> 
+    </div>
+    <!-- Reservation List Page -->
+    <div id="reservation-list" data-role="page" style="overflow: auto;" data-theme="d" data-title="Reservation List">
+      <div data-role="header" data-position="inline">
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#home" data-icon="home" data-transition="none">Home</a></li>
+            <li><a href="#search" data-icon="search" data-transition="none">Search</a></li>
+            <li><a id="reservation-page" href="#reservation-list" data-icon="check" class="ui-btn-active ui-state-persist" data-transition="none">Reservations</a></li>
+            <li><a href="#about" data-icon="info" data-transition="none">About</a></li>
+            <li><a href="#splash" data-icon="power" data-transition="fade">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+      <div data-role="content" data-theme="a">
+        <div data-role="tabs" id="reservation-tabs">
+          <div data-role="navbar">
+            <ul>
+              <li><a href="#open-reservation-list" data-ajax="false">Open</a></li>
+              <li><a href="#active-reservation-list" data-ajax="false">Active</a></li>
+              <li><a href="#reservation-history" data-ajax="false">History</a></li>
+            </ul>
+          </div>
+          <div id="open-reservation-list" class="ui-body-d ui-content">
+            <small>Pending reservations as of <span class="todays-date"></span>:</small>
+            <table style="font-size: 10pt; border-collapse:separate; border-spacing: 5px;" width="100%">
+              <tbody id="reservations-open-list"></tbody>
+            </table>
+          </div>
+          <div id="active-reservation-list" class="ui-body-d ui-content">
+            <small>Active reservations as of <span class="todays-date"></span>:</small>
+            <table style="font-size: 10pt; border-collapse:separate; border-spacing: 5px;" width="100%">
+              <tbody id="reservations-list"></tbody>
+            </table>
+          </div>
+          <div id="reservation-history">
+             <small>Inactive reservations as of <span class="todays-date"></span>:</small>
+            <table style="font-size: 10pt; border-collapse:separate; border-spacing: 5px;" width="100%">
+              <tbody id="reservations-history-list"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div data-role="footer" data-theme="d" data-position="fixed"></div> 
+    </div>
+    <!-- About Page -->
+    <div id="about" data-role="page" style="overflow: auto;" data-theme="d" data-title="About">
+      <div data-role="header" data-position="inline">
+        <div data-role="navbar">
+          <ul>
+            <li><a href="#home" data-icon="home" data-transition="none">Home</a></li>
+            <li><a href="#search" data-icon="search" data-transition="none">Search</a></li>
+            <li><a href="#reservation-list" data-icon="check" data-transition="none">Reservations</a></li>
+            <li><a href="#about" data-icon="info" class="ui-btn-active ui-state-persist" data-transition="none">About</a></li>
+            <li><a href="#splash" data-icon="power" data-transition="fade">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+      <div data-role="content" data-theme="a">
+        <h2 style="text-transform: uppercase;">LRMC Services</h2>
+        <h3 style="text-transform: uppercase;">Book and Non-Book Loaning</h3>
+        <p>The library has adopted an open shelf system to allow the users free access of the resources.</p>
+        <p>In borrowing library mterials, borrowers should secure or present bar-coded Identification card.</p>
+        <p>Borrowing privileges are granted only to Students faculty and Staff of BC Community.</p>
+        <h3 style="text-transform: uppercase;">Service Hours</h3>
+        <table width="100%" style="text-transform: uppercase; border-collapse:separate; border-spacing: 0 3px;" border="0" cellspacing="0" cellpadding="5">
+          <tbody>
+            <tr style="background-color: #C8E6C9;">
+              <td style="padding: 5px; margin:0; background-color: #C8E6C9; font-weight: bold;">Mondays - Fridays</td>
+              <td style="padding: 5px; margin:0; background-color: #C8E6C9;"><span>8:00am - 8:00pm</span><br><small>(NO NOON BREAK)</small></td>
+            </tr>
+            <tr style="background-color: #C8E6C9; border-radius: 3px;">
+              <td style="padding: 5px; margin:0; background-color: #C8E6C9; font-weight: bold;">Saturdays</td>
+              <td style="padding: 5px; margin:0; background-color: #C8E6C9;"><span>8:00am - 12:00nn</span><br><span>1:00pm - 5:00pm</span></td>
+            </tr>
+            <tr style="background-color: #C8E6C9; border-radius: 3px;">
+              <td style="padding: 5px; margin:0; background-color: #C8E6C9; font-weight: bold;">Sundays</td>
+              <td style="padding: 5px; margin:0; background-color: #C8E6C9;"><span>8:00am - 12:00nn</span><br><span>1:00pm - 5:00pm</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <h3 style="text-transform: uppercase;">Clientele</h3>
+        <div>
+          <span>The BC LRMC is open to the following:</span>
+          <ul style="list-style: square; margin-top: 3px;">
+            <li>Brokenshire College Community</li>
+            <li>Brokenshire College Alumni</li>
+            <li>Users from other academic institutions</li>
+          </ul>
+        </div>
+      </div>
+      <div data-role="footer" data-theme="d" data-position="fixed"></div> 
+    </div>
+    <!-- Offline Search Page -->
+    <div id="offline-search" data-role="page" style="overflow: auto;" data-theme="d" data-title="Offline Search">
+      <div data-role="content" data-theme="a">
+        <fieldset class="ui-grid-a">
+          <div class="ui-block-a">
+            <button data-theme="d" data-icon="action" type="button" id="sign-in-button">Sign In</button>
+          </div>
+          <div class="ui-block-b">
+            <button data-theme="a" data-icon="recycle" type="button" id="sync-materials-button">Sync Materials</button>
+          </div>
+        </fieldset>
+        <div data-role="content" data-theme="a">
+          <label for="search">Search Input:</label>
+          <ul data-role="listview" data-inset="true" data-filter="true" id="available-materials"></ul>
+        </div>
+      </div>
+      <div data-role="footer" data-theme="d" data-position="fixed"></div> 
+    </div>
+</body>
+</html>

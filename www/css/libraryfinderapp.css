@@ -1,0 +1,50 @@
+.splash-screen-title {
+	margin: 50% auto;
+}
+
+.center-contents {
+  margin-top: auto;
+  margin-bottom: 20%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.margin-y-10 { margin : 10px auto;  }
+
+.is-booked {
+	background: #d82c35 !important;
+   color: #fff !important;
+}
+
+.error { color : #d82c35 !important;  }
+
+.reservation-listing-row {
+	padding: 10px;
+	background: #fffeae;
+	border: 1px solid #efe03a;
+	border-radius: 3px;
+}
+
+.reservation-listing-row .title {
+	color: #5BB75B;
+}
+
+.application-logo-bsc {
+	width: 135px; 
+}
+
+.splash-screen-title .text {
+	color: #333333;
+    text-shadow: 0 0 0 #000000;
+}
+
+.overdue-badge {
+	background-color: #F44336;
+    padding: 5px;
+    text-shadow: none;
+    color: #fff;
+    border-radius: 3px;
+    margin: 10px;
+}
