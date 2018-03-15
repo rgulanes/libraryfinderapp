@@ -1,3 +1,59 @@
+// Wait for device API libraries to load
+//
+document.addEventListener("deviceready", onDeviceReady, false);
+
+// device APIs are available
+//
+function onDeviceReady() {
+  // Register the event listener
+  document.addEventListener("backbutton", onBackKeyDown, false);
+  document.addEventListener("offline", isOffline, false);
+}
+
+// Handle the back button
+//
+function onBackKeyDown() {
+  /* If the current page is the login page, disable the button completely (aka do nothing) */
+  if ($.inArray($.mobile.activePage.attr('id'), ['login', 'splash', 'offline-search']) === -1) {
+    swal({
+      title: 'Wanna Logout?',
+      html: "You are about to logout from the application",
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      allowOutsideClick: false,
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirm'
+    }).then((result) => {
+      if (result.value) {
+        $.mobile.changePage("#login", "fade");
+      }
+    });
+  }
+}
+
+// function if application is offline
+function isOffline() {
+  if ($.inArray($.mobile.activePage.attr('id'), ['splash']) === -1) {
+    swal({
+      title: 'Application is Offline',
+      html: "You are about to use the application in an offline status.",
+      type: 'warning',
+      showCancelButton: false,
+      confirmButtonColor: '#3085d6',
+      allowOutsideClick: false,
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Confirm'
+    }).then((result) => {
+      if (result.value) {
+        swal.close();
+      }
+    });
+  }
+
+  console.log("lost connection");
+}
+
 var FinderAppCtrl = (function () {
   var ip_address = 'http://localhost/libraryfinderapp-api';  
   var initialize = {
