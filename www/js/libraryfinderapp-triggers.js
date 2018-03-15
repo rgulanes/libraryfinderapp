@@ -1,13 +1,13 @@
 // Wait for device API libraries to load
 //
 document.addEventListener("deviceready", onDeviceReady, false);
+document.addEventListener("offline", isOffline, false);
 
 // device APIs are available
 //
 function onDeviceReady() {
   // Register the event listener
   document.addEventListener("backbutton", onBackKeyDown, false);
-  document.addEventListener("offline", isOffline, false);
 }
 
 // Handle the back button
