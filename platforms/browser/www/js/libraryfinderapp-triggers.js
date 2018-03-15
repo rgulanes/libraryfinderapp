@@ -684,6 +684,7 @@ $(document)
         title: 'Syncing Materials to App',
         text: 'Please wait while loading data',
         timer: 3000,
+        allowOutsideClick: false,
         onOpen: () => {
           swal.showLoading()
         }
