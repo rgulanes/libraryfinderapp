@@ -20,6 +20,7 @@ function onDeviceReady() {
 //
 function onBackKeyDown() {
   console.log('Backbutton key pressed');
+  return;
 }
 // function if application is offline
 function isOffline() {
