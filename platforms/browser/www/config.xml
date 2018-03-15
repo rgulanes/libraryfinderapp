@@ -8,6 +8,8 @@
         BSC - Dev Team
     </author>
     <content src="index.html" />
+    <icon src="www/img/libraryfinderapp-icon.png" />
+    <gap:splash src="www/res/screen/android/drawable-port-xxxhdpi-screen.png" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />

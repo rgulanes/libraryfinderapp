@@ -1,9 +1,9 @@
 var FinderAppCtrl = (function () {
-  var ip_address = 'http://192.168.11.52';  
+  var ip_address = 'https://api-betalibraryfinderappbsc.000webhostapp.com';  
   var initialize = {
     genre : function () {
       $.ajax({
-        url: ip_address + '/libraryfinderapp-api/v1/classifications',
+        url: ip_address + '/v1/classifications',
         type: 'GET',
         cache: false,
         error : function(xhr, ajaxOptions, thrownError) {
@@ -26,7 +26,7 @@ var FinderAppCtrl = (function () {
     },
     books : function (genre) {
       $.ajax({
-        url: ip_address + '/libraryfinderapp-api/v1/materials',
+        url: ip_address + '/v1/materials',
         type: 'GET',
         data : {
           genre : genre
@@ -54,7 +54,7 @@ var FinderAppCtrl = (function () {
     },
     offline : function (genre) {
       $.ajax({
-        url: ip_address + '/libraryfinderapp-api/v1/materials',
+        url: ip_address + '/v1/materials',
         type: 'GET',
         data : {
           genre : genre
@@ -83,7 +83,7 @@ var FinderAppCtrl = (function () {
 
   var _search = function (key) {
     $.ajax({
-      url: ip_address + '/libraryfinderapp-api/v1/materials',
+      url: ip_address + '/v1/materials',
       type: 'GET',
       data : {
         key : key
@@ -111,7 +111,7 @@ var FinderAppCtrl = (function () {
   var create = function ($data) {
     $(document).find('#reservation-form small.form-validation').html('');
 
-    $.post(ip_address + '/libraryfinderapp-api/v1/reservations/', $data, function (response) {
+    $.post(ip_address + '/v1/reservations/', $data, function (response) {
       var data = response;
 
       if (data.log_status === true) {
@@ -172,7 +172,7 @@ var FinderAppCtrl = (function () {
     },
     Search : function (id) {
       $.ajax({
-        url: ip_address + '/libraryfinderapp-api/v1/materials/' + id,
+        url: ip_address + '/v1/materials/' + id,
         type: 'GET',
         cache: false,
         error : function(xhr, ajaxOptions, thrownError) {
@@ -201,7 +201,7 @@ var FinderAppCtrl = (function () {
       $(document).find('#login-form small.form-validation').html('');
       var login_info = data;
 
-      $.post(ip_address + '/libraryfinderapp-api/v1/auth/', login_info, function (response) {
+      $.post(ip_address + '/v1/auth/', login_info, function (response) {
         var data = response;
 
         if (data.status === true && data.is_active === true) {
@@ -261,7 +261,7 @@ var FinderAppCtrl = (function () {
     Signup : function (data) {
       $(document).find('#signup-form small.form-validation').html('');
 
-      $.post(ip_address + '/libraryfinderapp-api/v1/users/', data, function (response) {
+      $.post(ip_address + '/v1/users/', data, function (response) {
         var data = response;
         
         if (data.log_status === true) {
@@ -291,7 +291,7 @@ var FinderAppCtrl = (function () {
     Get : {
       books : function (id) {
         $.ajax({
-          url: ip_address + '/libraryfinderapp-api/v1/materials/' + id,
+          url: ip_address + '/v1/materials/' + id,
           type: 'GET',
           cache: false,
           error : function(xhr, ajaxOptions, thrownError) {
@@ -319,7 +319,7 @@ var FinderAppCtrl = (function () {
       },
       reservations : function (id) {
         $.ajax({
-          url: ip_address + '/libraryfinderapp-api/v1/reservations?user_id=' + id,
+          url: ip_address + '/v1/reservations?user_id=' + id,
           type: 'GET',
           cache: false,
           error : function(xhr, ajaxOptions, thrownError) {
@@ -424,7 +424,7 @@ var FinderAppCtrl = (function () {
       },
       material : function (id, dom) {
         $.ajax({
-          url: ip_address + '/libraryfinderapp-api/v1/materials/' + id,
+          url: ip_address + '/v1/materials/' + id,
           type: 'GET',
           cache: false,
           error : function(xhr, ajaxOptions, thrownError) {

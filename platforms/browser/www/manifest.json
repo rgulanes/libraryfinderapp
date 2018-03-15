@@ -6,7 +6,13 @@
   "version": "com.brokenshirecollege.libraryfinderapp",
   "description": "Library Finder Application for Brokenshire Collge of Davao",
   "author": "BSC - Dev Team",
-  "icons": [],
+  "icons": [
+    {
+      "src": "www/img/libraryfinderapp-icon.png",
+      "type": "image/png",
+      "sizes": "undefinedxundefined"
+    }
+  ],
   "orientation": "portrait",
   "start_url": "index.html",
   "theme_color": "#999999"
