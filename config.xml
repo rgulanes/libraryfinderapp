@@ -17,7 +17,7 @@
     <preference name="android-minSdkVersion" value="14" />
     <!-- End of Android Only -->
     <!--DEFAULT ICON-->
-    <icon src="www/res/icon/android/drawable-xxxhdpi-icon.png" />
+    <icon src="www/img/libraryfinderapp-icon.png" />
     <gap:splash src="www/res/screen/android/drawable-port-xxxhdpi-screen.png" />
     <!-- iOS Only -->
     <!-- End of iOS Only -->
