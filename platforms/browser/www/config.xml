@@ -2,10 +2,10 @@
 <widget id="com.brokenshirecollege.libraryfinderapp" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Library Finder App</name>
     <description>
-        Hello World sample application that responds to the deviceready event.
+        Library Finder Application for Brokenshire Collge of Davao
     </description>
     <author email="support@phonegap.com" href="http://phonegap.com">
-        PhoneGap Team
+        BSC - Dev Team
     </author>
     <content src="index.html" />
     <access origin="*" />
