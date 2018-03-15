@@ -666,7 +666,20 @@ $(document)
       FinderAppCtrl.Search(data.bookId);
     });
 
+    var checkInternet = function () {
+      var networkState = navigator.connection.type;
+
+      if(networkState === Connection.NONE || networkState === Connection.UNKNOWN) {
+          isOffline();
+          return false;
+      } else {
+         return true;
+      }
+    };
+
     $_.on('click', '#sync-materials-button', function () {
+      if (!checkInternet()) { return; }
+
       swal({
         title: 'Syncing Materials to App',
         text: 'Please wait while loading data',
