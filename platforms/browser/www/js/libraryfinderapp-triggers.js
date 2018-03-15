@@ -1,5 +1,5 @@
 var FinderAppCtrl = (function () {
-  var ip_address = 'https://api-betalibraryfinderappbsc.000webhostapp.com';  
+  var ip_address = 'http://localhost/libraryfinderapp-api';  
   var initialize = {
     genre : function () {
       $.ajax({
@@ -115,8 +115,6 @@ var FinderAppCtrl = (function () {
       var data = response;
 
       if (data.log_status === true) {
-        //$('#msg-box').popup('open');
-        //$('#msg-content').html(data.message + '<br/> Please wait while we refresh the list.');
         swal({
             type: 'success',
             title : 'Success!',
@@ -213,7 +211,10 @@ var FinderAppCtrl = (function () {
           }).then(function () {}, function () {});
 
           setTimeout( function () {
-            localStorage.setItem('user', JSON.stringify(data.user));
+            if (!localStorage.getItem('user')) {
+              localStorage.setItem('user', JSON.stringify(data.user));
+            }
+
             $.mobile.changePage("#home", "fade");
 
             $('#login-form').find('input[name="id_number"]').val(null);
@@ -467,18 +468,24 @@ var FinderAppCtrl = (function () {
 // Page Initialization
 $(document).bind("pagebeforechange", function( event, data ) {
   $.mobile.pageData = (data && data.options && data.options.pageData) ? data.options.pageData : null;
+}).on("pagebeforeshow", "#splash", function(e, data){
+  localStorage.removeItem('user');
 }).on("pagebeforeshow", "#login", function(e, data){
   localStorage.removeItem('user');
 }).on("pagebeforeshow", "#home", function(e, data){
+  if (!localStorage.getItem('user')) { $.mobile.changePage("#login", "fade"); return; }
   FinderAppCtrl.Init.genre();
 }).on("pagebeforeshow", "#search", function(e, data){ 
+  if (!localStorage.getItem('user')) { $.mobile.changePage("#login", "fade"); return; }
   var genre = ($.mobile.pageData && $.mobile.pageData.genre) ?  parseInt($.mobile.pageData.genre) : '';
   FinderAppCtrl.Init.books(genre);
 }).on("pagebeforeshow", "#reservation-frm", function(e, data){ 
+  if (!localStorage.getItem('user')) { $.mobile.changePage("#login", "fade"); return; }
   if ($.mobile.pageData && $.mobile.pageData.book_id) {
     FinderAppCtrl.Get.material($.mobile.pageData.book_id, '#rsv-material-info');
   }
 }).on("pagebeforeshow", "#reservation-list", function(e, data){ 
+  if (!localStorage.getItem('user')) { $.mobile.changePage("#login", "fade"); return; }
   var user_data = FinderAppCtrl.user_data();
   $('#reservation-tabs').tabs( "option", "active", 1 );
   $('#reservation-tabs a[href="#active-reservation-list"]').addClass('ui-btn-active');
@@ -537,7 +544,7 @@ $(document)
 
     $_.on('click', '#search-page', function (event) {
         $(":mobile-pagecontainer")
-          .pagecontainer("change", "#search", {  reload : true, allowSamePageTransition : true, transition : "none" });
+          .pagecontainer("change", "#search", {  reload : false, allowSamePageTransition : true, transition : "none" });
     });
 
     $_.on('click', 'a.books', function () {
@@ -568,7 +575,7 @@ $(document)
 
     $_.on('click', '#reservation-page', function (event) {
         $(":mobile-pagecontainer")
-          .pagecontainer("change", "#search", {  reload : true, allowSamePageTransition : true, transition : "none" });
+          .pagecontainer("change", "#search", {  reload : false, allowSamePageTransition : true, transition : "none" });
     });
 
     $_.on('click', '#save-btn', function () {
@@ -583,6 +590,11 @@ $(document)
 .delegate("#reservation-list", "pagecreate", function(){ 
     var $_ = $(this), 
         user_data = FinderAppCtrl.user_data();
+
+    $_.on('click', '#reservation-page', function (event) {
+        $(":mobile-pagecontainer")
+          .pagecontainer("change", "#reservation-list", {  reload : false, allowSamePageTransition : true, transition : "none" });
+    });
 })
 .delegate("#offline-search", "pagecreate", function(){ 
     var $_ = $(this);
@@ -606,7 +618,7 @@ $(document)
         onOpen: () => {
           swal.showLoading()
         }
-      });
+      }).then(() => {}, () => {});
     });
 });
 
@@ -615,12 +627,3 @@ $('[data-role=page]').live('pageshow', function (event, ui) {
   var html = ['<center><small class="margin-y-10">Library Book-Finder Application © 2017</small></center>'].join('');
   $("#" + event.target.id).find("[data-role=footer]").html(html);
 });
-
-// PhoneGap Usage Functions
-function onErrorCreateFile() {
-    console.log("Create file fail...");
-};
-
-function onErrorLoadFs() {
-    console.log("File system fail...");
-};
