@@ -55,7 +55,7 @@ function isOffline() {
 }
 
 var FinderAppCtrl = (function () {
-  var ip_address = 'http://localhost/libraryfinderapp-api';
+  var ip_address = 'http://loz4zovy-site.atempurl.com/libraryfinderapp-api';
 
   var unset = function (array, list) {
     $.each(array, function (key, item) {
