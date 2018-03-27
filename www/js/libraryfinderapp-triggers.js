@@ -776,8 +776,6 @@ $(document)
           }
         });
       }
-
-      FinderAppCtrl.Sync();
     });
 });
 
