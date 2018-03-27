@@ -590,7 +590,10 @@ var FinderAppCtrl = (function () {
 $(document).bind("pagebeforechange", function( event, data ) {
   $.mobile.pageData = (data && data.options && data.options.pageData) ? data.options.pageData : null;
 }).on("pagebeforeshow", "#splash", function(e, data){
-  localStorage.removeItem('user');
+  localStorage.clear();
+  setTimeout(function () {
+    $.mobile.changePage("#login", "fade");
+  }, 3500);
 }).on("pagebeforeshow", "#login", function(e, data){
   localStorage.removeItem('user');
 }).on("pagebeforeshow", "#home", function(e, data){
@@ -621,9 +624,7 @@ $(document).bind("pagebeforechange", function( event, data ) {
 // Page Loaded
 $(document)
 .delegate("#splash", "pagecreate", function(){
-    setTimeout(function () {
-      $.mobile.changePage("#login", "fade");
-    }, 3500);
+    
 })
 .delegate("#login", "pagecreate", function(){ 
     FinderAppCtrl.Init.data();
