@@ -55,7 +55,16 @@ function isOffline() {
 }
 
 var FinderAppCtrl = (function () {
-  var ip_address = 'http://localhost/libraryfinderapp-api';  
+  var ip_address = 'http://localhost/libraryfinderapp-api';
+
+  var unset = function (array, list) {
+    $.each(array, function (key, item) {
+      if ($.inArray(key, list) !== -1) { delete array[key]; }
+    });
+
+    return array;
+  };
+
   var initialize = {
     genre : function () {
       $.ajax({
@@ -109,32 +118,87 @@ var FinderAppCtrl = (function () {
       })
     },
     offline : function (genre) {
-      $.ajax({
-        url: ip_address + '/v1/materials',
-        type: 'GET',
-        data : {
-          genre : genre
-        },
-        cache: false,
-        error : function(xhr, ajaxOptions, thrownError) {
-          console.log(xhr.status, thrownError);
-        },
-        success: function(response) {
+      Database.get('materials_list', null, null, 'title').then((response) => {
+        if (response.length === 0) {
+          $('#available-materials').html('');
+          swal({
+            title: 'Data not synced',
+            html: "Do you want to sync data to materials list?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            allowOutsideClick: false,
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Confirm'
+          }).then((result) => {
+            if (result.value) {
+             downloadData();
+            }
+          });
+        } else {
           var data = response,
-            size = data.length;
+              size = data.length;
 
           $('#available-materials').html('');
           $.each(data, function (k,v) {
             var _class = (k+1) === 1 ? 'ui-first-child' : (size === (k+1) ? 'ui-last-child' : '');
             var icon = v.available_copy <= 0 ? 'ui-icon-forbidden' : 'ui-icon-check';
             var html = ['<li data-icon="info" class="'+ _class +'">',
-              '<a data-book-id='+ parseInt(v.id) +' class="ui-btn ui-btn-icon-right '+ icon +' books '+ (v.available_copy <= 0 ? 'is-booked' : '') +'">'+ v.title +'</a>',
+              '<a data-book-id='+ parseInt(v.id) +' class="ui-btn ui-btn-icon-right '+ icon +' books '+ ((v.available_copy <= 0) ? 'is-booked' : '') +'">'+ v.title +'</a>',
               '</li>'].join('');
             $('#available-materials').append(html);
           });
+
         }
-      })
+      }, () => {});
     }
+  };
+
+  var downloadData =  function () {
+    swal({
+      title: 'Syncing Materials to App',
+      text: 'Please wait while loading data',
+      allowOutsideClick: false,
+      onOpen: () => {
+        swal.showLoading()
+      }
+    }).then(() => {}, () => {});
+
+    $.ajax({
+      url: ip_address + '/v1/materials',
+      type: 'GET',
+      cache: false,
+      error : function(xhr, ajaxOptions, thrownError) {
+        console.log(xhr.status, thrownError);
+      },
+      success: function(data) {
+        var size = data.length;
+
+        if (data.length > 0) {
+          swal.close();
+
+          Database.truncate('materials_list').then((response) => {
+            if (response.status) {
+              $.each(data, function (index, object) {
+                object = unset(object, ['deleted_at', 'deleted_by', 'updated_at', 'updated_by']);
+
+                Database.insert('materials_list', object, ['id', 'title', 'created_at', 'created_by'], true).then(() => {}, () => {});
+              });
+
+              $('#available-materials').html('');
+              $.each(data, function (k,v) {
+                var _class = (k+1) === 1 ? 'ui-first-child' : (size === (k+1) ? 'ui-last-child' : '');
+                var icon = v.available_copy <= 0 ? 'ui-icon-forbidden' : 'ui-icon-check';
+                var html = ['<li data-icon="info" class="'+ _class +'">',
+                  '<a data-book-id='+ parseInt(v.id) +' class="ui-btn ui-btn-icon-right '+ icon +' books '+ ((v.available_copy <= 0) ? 'is-booked' : '') +'">'+ v.title +'</a>',
+                  '</li>'].join('');
+                $('#available-materials').append(html);
+              });
+            }
+          }, (response) => {});
+        }
+      }
+    });
   };
 
   var _search = function (key) {
@@ -310,8 +374,6 @@ var FinderAppCtrl = (function () {
             showConfirmButton: false,
             timer: 1500
           }).then(function () {}, function () {});
-          //$('#message-box').popup('open');
-          //$('#message-content').html('Account does not exists.');
         }
       });
     },
@@ -518,6 +580,9 @@ var FinderAppCtrl = (function () {
         });
       }
     },
+    Sync : function () {
+      downloadData();
+    }
 	}
 })();
 
@@ -663,7 +728,21 @@ $(document)
     $_.on('click', 'a.books', function () {
       var data = $(this).data();
 
-      FinderAppCtrl.Search(data.bookId);
+      Database.get('materials_list', data.bookId.toString()).then((json) => {
+        var data = json,
+            html = [
+              '<b>' + data.title.toUpperCase() + '</b><br><br>',
+              '<b>Author:</b> ' + ((data.author) ? data.author : 'Not Indicated') + '<br>',
+              '<b>Publication Date:</b> ' + ((data.publication_date) ? data.publication_date : 'Not Indicated') + '<br>',
+              '<b>Material Type:</b> ' + ((data.type) ? data.type : 'Not Indicated') + '<br>',
+              '<b>Availability:</b> ' + ((data.available_copy > 0) ? 'Available ('+ data.available_copy +')' : 'Not Available')+ '<br>',
+            ].join('');
+
+        swal({
+          showConfirmButton: false,
+          html : '<div style="font-size: 14px; text-align: left;">' + html + '</div>'
+        }).then(function () {}, function () {});
+      }, (error) => {});
     });
 
     var checkInternet = function () {
@@ -680,15 +759,25 @@ $(document)
     $_.on('click', '#sync-materials-button', function () {
       if (!checkInternet()) { return; }
 
-      swal({
-        title: 'Syncing Materials to App',
-        text: 'Please wait while loading data',
-        timer: 3000,
-        allowOutsideClick: false,
-        onOpen: () => {
-          swal.showLoading()
-        }
-      }).then(() => {}, () => {});
+      if (checkInternet()) {
+        swal({
+          title: 'Data not synced',
+          html: "Do you want to sync data to materials list?",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          allowOutsideClick: false,
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Confirm'
+        }).then((result) => {
+          if (result.value) {
+            $('#available-materials').html('');
+            FinderAppCtrl.Sync();
+          }
+        });
+      }
+
+      FinderAppCtrl.Sync();
     });
 });
 

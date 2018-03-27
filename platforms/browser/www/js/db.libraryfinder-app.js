@@ -47,7 +47,7 @@ var validate = function (required, data) {
 
   $.each(data, function (col, val) {
     var error = new Array();
-    if (val.trim() === ' ' || val.trim() === '' || val === null) {
+    if (val === null || (val !== null && val === ' ' || val !== null && val === '')) {
       error[col.toString()] = (col.replace('_', ' ') + ' is required.');
       $.extend(true, errors, error);
     }
@@ -63,12 +63,20 @@ var getColumns = function(table) {
   var database = indexedDB.open(Auth.dbname, 1),
       result = new Array();
 
+  var unset = function (array, list) {
+    $.each(array, function (key, item) {
+      if ($.inArray(key, list) !== -1) { delete array[key]; }
+    });
+
+    return array;
+  };
+
   var dataProcess = function (callback) {
     database.onsuccess = function(event) {
       var db = event.target.result,
           dbTable = db.transaction([table], "readwrite").objectStore(table);
 
-      var indices = Tools.unset(dbTable.indexNames, ['contains', 'item', 'length']);
+      var indices = unset(dbTable.indexNames, ['contains', 'item', 'length']);
 
       callback(indices);
     };
@@ -87,7 +95,7 @@ var getColumns = function(table) {
   return result;
 };
 
-databaseExists('RMSMasterLocal', function (exists) {
+databaseExists(Auth.dbname, function (exists) {
   var database = indexedDB.open(Auth.dbname, 1);
 
   var initialize = function () {
@@ -102,7 +110,13 @@ databaseExists('RMSMasterLocal', function (exists) {
       db_logs.createIndex("is_error", "is_error", { unique : false });
       db_logs.createIndex("notification", "notification", { unique : false });
       db_logs.createIndex("date_created", "date_created", { unique : false });
-      
+
+      master_setup.createIndex("id", "id", { unique : true });
+      master_setup.createIndex("title", "title", { unique : false });
+      master_setup.createIndex("author", "author", { unique : false });
+      master_setup.createIndex("created_at", "created_at", { unique : false });
+      master_setup.createIndex("barcode", "barcode", { unique : true });
+      master_setup.createIndex("type", "type", { unique : false });
     };
     
     database.onerror = function(event) {
@@ -124,10 +138,11 @@ databaseExists('RMSMasterLocal', function (exists) {
 
 
 Database = {
-  insert : function (table, data, required) {
+  insert : function (table, data, required, bypass) {
     required = required || getColumns(table);
+    bypass = bypass || false;
 
-    var validation = validate(required, data);
+    var validation = (!bypass) ? validate(required, data) : { status : true, message : '' };
 
     var database = indexedDB.open(Auth.dbname, 1);
 
@@ -153,16 +168,17 @@ Database = {
       }
     });
   },
-  get : function (table, id, limit) {
+  get : function (table, id, limit, sort) {
     id = id || null;
     limit = limit || null;
+    sort = sort || "id";
 
     var database = indexedDB.open(Auth.dbname, 1);
 
     return new Promise(function (resolve, reject) {
       database.onsuccess = function(event) {
         var db = event.target.result;
-            transaction = db.transaction([table], "readwrite").objectStore(table),
+            transaction = db.transaction([table], "readwrite").objectStore(table).index(sort),
             data = new Array();
 
         if (id === null) {
@@ -172,7 +188,7 @@ Database = {
             request.onsuccess = function (event) { 
               data = event.target.result;
 
-              data = (data && data.length <= 1) ? data[0] : data;
+              data = (data && data.length <= 1 && data.length !== 0) ? data[0] : data;
               resolve(data);
             };
 
@@ -183,7 +199,7 @@ Database = {
             request.onsuccess = function (event) { 
               data = event.target.result;
 
-              data = (data && data.length <= 1) ? data[0] : data;
+              data = (data && data.length <= 1 && data.length !== 0) ? data[0] : data;
               resolve(data);
             };
 
@@ -194,8 +210,7 @@ Database = {
 
           request.onsuccess = function (event) { 
             data = event.target.result;
-
-            data = (data && data.length <= 1) ? data[0] : data;
+            data = (data && data.length <= 1 && data.length !== 0) ? data[0] : data;
             resolve(data);
           };
 
@@ -233,6 +248,27 @@ Database = {
       } else {
         reject({ status: false, output : validation.message });
       }
+    });
+  },
+  truncate : function (table) {
+    var database = indexedDB.open(Auth.dbname, 1);
+
+    return new Promise(function (resolve, reject) {
+
+      database.onsuccess = function (event) {
+        var db = event.target.result,
+            transaction = db.transaction([table], "readwrite").objectStore(table),
+            request = transaction.clear();
+
+        request.onsuccess = function (event) {
+          resolve({ status: true, output : 'Cleared successfully.' });
+        };
+
+        request.error = function (event) {
+          reject({ status: false, output : 'Unable to clear table.' });
+        };
+      }
+
     });
   }
 };
