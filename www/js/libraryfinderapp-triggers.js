@@ -771,8 +771,12 @@ $(document)
           confirmButtonText: 'Confirm'
         }).then((result) => {
           if (result.value) {
-            $('#available-materials').html('');
-            FinderAppCtrl.Sync();
+            swal.close();
+
+            setTimeout(function () {
+              $('#available-materials').html('');
+              FinderAppCtrl.Sync();
+            }, 2000);
           }
         });
       }
